@@ -6,6 +6,21 @@
 /e2e/test-output/
 /.angular/
 .angular/
+# .NET
+**/bin/
+**/obj/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# OS / IDE
+.vscode/
+.idea/
+*.user
+*.suo
+
 
 # Node modules and dependency files
 /node_modules/
