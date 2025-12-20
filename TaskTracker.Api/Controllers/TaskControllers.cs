@@ -1,73 +1,91 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskTracker.Api.Data;
 using TaskTracker.Api.Models;
 
-namespace TaskTracker.Api.Controllers;
-
-[Authorize]  // Require JWT for all endpoints
-[ApiController]
-[Route("api/[controller]")]
-public class TasksController : ControllerBase
+namespace TaskTracker.Api.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public TasksController(AppDbContext context)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class TasksController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly AppDbContext _db;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks()
-    {
-        return await _context.Tasks.ToListAsync();
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<TaskItem>> GetTask(int id)
-    {
-        var task = await _context.Tasks.FindAsync(id);
-        if (task == null) return NotFound();
-        return task;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<TaskItem>> CreateTask(TaskItem task)
-    {
-        _context.Tasks.Add(task);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateTask(int id, TaskItem task)
-    {
-        if (id != task.Id) return BadRequest();
-
-        _context.Entry(task).State = EntityState.Modified;
-
-        try
+        public TasksController(AppDbContext db)
         {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_context.Tasks.Any(e => e.Id == id)) return NotFound();
-            throw;
+            _db = db;
         }
 
-        return NoContent();
-    }
+        // GET: /api/Tasks
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TaskItem>>> GetAll()
+        {
+            var tasks = await _db.Tasks.ToListAsync();
+            return Ok(tasks);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTask(int id)
-    {
-        var task = await _context.Tasks.FindAsync(id);
-        if (task == null) return NotFound();
+        // GET: /api/Tasks/project/3
+        [HttpGet("project/{projectId:int}")]
+        public async Task<ActionResult<IEnumerable<TaskItem>>> GetForProject(int projectId)
+        {
+            var tasks = await _db.Tasks
+                .Where(t => t.ProjectId == projectId)
+                .ToListAsync();
 
-        _context.Tasks.Remove(task);
-        await _context.SaveChangesAsync();
-        return NoContent();
+            return Ok(tasks);
+        }
+
+        // POST: /api/Tasks
+        [HttpPost]
+        public async Task<ActionResult<TaskItem>> Create([FromBody] TaskItem task)
+        {
+            if (string.IsNullOrWhiteSpace(task.Title))
+                return BadRequest("Task title is required.");
+
+            // validate Project exists
+            var exists = await _db.Projects.AnyAsync(p => p.Id == task.ProjectId);
+            if (!exists) return BadRequest("Invalid ProjectId.");
+
+            _db.Tasks.Add(task);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
+        }
+
+        // GET: /api/Tasks/5
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<TaskItem>> GetById(int id)
+        {
+            var task = await _db.Tasks.FindAsync(id);
+            if (task == null) return NotFound();
+            return Ok(task);
+        }
+
+        // PUT: /api/Tasks/5
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] TaskItem updated)
+        {
+            var task = await _db.Tasks.FindAsync(id);
+            if (task == null) return NotFound();
+
+            task.Title = updated.Title;
+            task.IsCompleted = updated.IsCompleted;
+            task.ProjectId = updated.ProjectId;
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // DELETE: /api/Tasks/5
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var task = await _db.Tasks.FindAsync(id);
+            if (task == null) return NotFound();
+
+            _db.Tasks.Remove(task);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
