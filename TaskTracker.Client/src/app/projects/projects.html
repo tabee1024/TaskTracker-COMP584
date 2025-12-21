@@ -1,0 +1,36 @@
+<h2>Projects</h2>
+
+<!-- Logout button -->
+<button (click)="logout()" style="margin-bottom: 16px;">
+  Logout
+</button>
+
+<form [formGroup]="projectForm" (ngSubmit)="createProject()">
+  <div>
+    <label>Name</label><br />
+    <input type="text" formControlName="name" />
+  </div>
+
+  <div style="margin-top: 8px;">
+    <label>Description (optional)</label><br />
+    <input type="text" formControlName="description" />
+  </div>
+
+  <div style="margin-top: 12px;">
+    <button type="submit" [disabled]="loading || projectForm.invalid">
+      Create Project
+    </button>
+  </div>
+
+  <p *ngIf="error" style="color: red; margin-top: 10px;">
+    {{ error }}
+  </p>
+</form>
+
+<hr />
+
+<ul>
+  <li *ngFor="let p of projects">
+    {{ p.name }} (id: {{ p.id }})
+  </li>
+</ul>

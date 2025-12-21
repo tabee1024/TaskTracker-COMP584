@@ -1,0 +1,26 @@
+<h2>Create Account</h2>
+
+<form (ngSubmit)="register()">
+  <div>
+    <label>Username</label><br />
+    <input type="text" name="username" [(ngModel)]="username" />
+  </div>
+
+  <div style="margin-top: 8px;">
+    <label>Password</label><br />
+    <input type="password" name="password" [(ngModel)]="password" />
+  </div>
+
+  <div style="margin-top: 8px;">
+    <label>Confirm Password</label><br />
+    <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword" />
+  </div>
+
+  <div style="margin-top: 12px;">
+    <button type="submit">Create Account</button>
+    <a routerLink="/login" style="margin-left: 12px;">Back to Login</a>
+  </div>
+
+  <p *ngIf="success" style="color: green; margin-top: 10px;">{{ success }}</p>
+  <p *ngIf="error" style="color: red; margin-top: 10px;">{{ error }}</p>
+</form>

@@ -1,0 +1,41 @@
+<h2>Tasks</h2>
+
+<!-- Logout button -->
+<button (click)="logout()" style="margin-bottom: 16px;">
+  Logout
+</button>
+
+<form [formGroup]="taskForm" (ngSubmit)="createTask()">
+  <div>
+    <label>Title</label><br />
+    <input type="text" formControlName="title" />
+  </div>
+
+  <div style="margin-top: 8px;">
+    <label>Project</label><br />
+    <select formControlName="projectId">
+      <option [ngValue]="null">-- Select a project --</option>
+      <option *ngFor="let p of projects" [ngValue]="p.id">
+        {{ p.name }} (id: {{ p.id }})
+      </option>
+    </select>
+  </div>
+
+  <div style="margin-top: 12px;">
+    <button type="submit" [disabled]="loading || taskForm.invalid">
+      Create Task
+    </button>
+  </div>
+
+  <p *ngIf="error" style="color: red; margin-top: 10px;">
+    {{ error }}
+  </p>
+</form>
+
+<hr />
+
+<ul>
+  <li *ngFor="let t of tasks">
+    {{ t.title }} — ProjectId: {{ t.projectId }} — Done: {{ t.done }}
+  </li>
+</ul>
