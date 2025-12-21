@@ -66,19 +66,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// ----------------------
-// CORS (Angular dev server)
-// ----------------------
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost4200", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-        // NOTE: removed AllowCredentials() to avoid browser/CORS edge cases unless you truly need cookies
-    });
-});
+// CORS not required when Angular is served from the API
+
 
 // ----------------------
 // Controllers + Swagger registration (middleware disabled below)
@@ -111,10 +100,11 @@ if (app.Environment.IsDevelopment())
     // Swagger disabled (was causing 500 on swagger.json)
     // app.UseSwagger();
     // app.UseSwaggerUI();
+
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowLocalhost4200");
+// Disable HTTPS redirect for LAN/demo (prevents "Failed to determine the https port")
+ // app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
