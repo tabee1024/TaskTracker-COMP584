@@ -16,9 +16,10 @@ COPY TaskTracker.Api/TaskTracker.Api.csproj TaskTracker.Api/
 RUN dotnet restore TaskTracker.Api/TaskTracker.Api.csproj
 
 COPY TaskTracker.Api/ TaskTracker.Api/
-# Copy Angular output into API wwwroot (Angular SSR output uses /browser)
-RUN rm -rf TaskTracker.Api/wwwroot/* \
-    && cp -R /src/TaskTracker.Client/dist/TaskTracker.Client/browser/* TaskTracker.Api/wwwroot/
+
+# Copy Angular output into API wwwroot (Angular outputs to dist/.../browser)
+RUN rm -rf TaskTracker.Api/wwwroot/*
+COPY --from=ngbuild /src/TaskTracker.Client/dist/TaskTracker.Client/browser/ TaskTracker.Api/wwwroot/
 
 RUN dotnet publish TaskTracker.Api/TaskTracker.Api.csproj -c Release -o /app/publish
 
