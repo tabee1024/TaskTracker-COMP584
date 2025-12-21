@@ -3,7 +3,7 @@ FROM node:20-bookworm AS ngbuild
 WORKDIR /src/TaskTracker.Client
 
 COPY TaskTracker.Client/package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY TaskTracker.Client/ ./
 RUN npx ng build --configuration production --project "TaskTracker.Client"

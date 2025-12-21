@@ -43,9 +43,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # --- TaskTracker deployment/build outputs (do not commit) ---
+# --- TaskTracker deployment/build outputs (do not commit) ---
 TaskTracker.Api/wwwroot/
 TaskTracker.Api/publish/
 TaskTracker.Api/publish_out/
 TaskTracker.Api/*.sqlite
 TaskTracker.Api/*.sqlite-shm
 TaskTracker.Api/*.sqlite-wal
+TaskTracker.Api/obj/
+TaskTracker.Api/bin/
