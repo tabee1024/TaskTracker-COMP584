@@ -8,14 +8,10 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ConnectionStrings__DefaultConnection
-        value: Data Source=/var/data/tasktracker.db
+        value: Data Source=/tmp/tasktracker.db
       - key: Jwt__Key
         generateValue: true
       - key: Jwt__Issuer
         value: TaskTrackerAPI
       - key: Jwt__Audience
         value: TaskTrackerClient
-    disk:
-      name: tasktracker-data
-      mountPath: /var/data
-      sizeGB: 1
